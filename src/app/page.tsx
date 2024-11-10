@@ -17,6 +17,7 @@ import { useMemo } from "react";
 
 export default function Home() {
   const tasks = useTasks((state) => state.tasks);
+  const changeStatus = useTasks((state) => state.changeStatus);
   const ids = useMemo(() => tasks.map((task) => task.id), [tasks]);
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -25,6 +26,13 @@ export default function Home() {
       },
     })
   );
+  const handleOndragEnd = (event: any) => {
+    const { active, over } = event;
+    if (!over) return;
+    if (over?.id !== active?.id) {
+      changeStatus(active.id, over.id);
+    }
+  };
   return (
     <div className="flex flex-col gap-5 p-10">
       <div className="text-2xl font-semibold flex items-center gap-5">
@@ -32,7 +40,7 @@ export default function Home() {
         <AddTaskPopup />
       </div>
       <DndContext
-        onDragEnd={() => {}}
+        onDragEnd={handleOndragEnd}
         collisionDetection={closestCenter}
         sensors={sensors}
       >
