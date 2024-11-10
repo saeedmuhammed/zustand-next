@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
-import { useDroppable } from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import useTasks from "@/store";
 
@@ -20,12 +20,12 @@ interface StateCardProps {
 }
 
 const TaskCard = ({ item }: { item: Task }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: item.id });
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: item.id,
+  });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    transform: CSS.Translate.toString(transform),
   };
 
   const removeTask = useTasks((state) => state.removeTask);
@@ -34,7 +34,13 @@ const TaskCard = ({ item }: { item: Task }) => {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      key={item.id}
+    >
       <Card className="cursor-pointer hover:bg-gray-100">
         <CardHeader className="flex flex-row justify-between items-center">
           <div>
@@ -60,7 +66,7 @@ const TaskCard = ({ item }: { item: Task }) => {
 export const StateCard = ({ title, color, status }: StateCardProps) => {
   const allTasks = useTasks((state) => state?.tasks);
   const list = allTasks.filter((item) => item.status === status);
-  const { setNodeRef } = useDroppable({ id: title });
+  const { setNodeRef } = useDroppable({ id: status });
   return (
     <div ref={setNodeRef}>
       <Card className="w-[400px] min-h-[700px] ">
